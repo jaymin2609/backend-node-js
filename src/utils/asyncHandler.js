@@ -1,8 +1,19 @@
+import { ApiError } from "../utils/ApiError.js";
+
 const asyncHandler = (reqHandler) => {
     return (req, res, next) => {
         Promise
             .resolve(reqHandler(req, res, next))
-            .catch((err) => { next(err) })
+            .catch((err) => {
+                if (err instanceof ApiError) {
+                    console.log("asyncHandler ERROR : ", err instanceof ApiError);
+                    console.log("asyncHandler ERROR : ", err);
+                    res.status(err.statusCode).json(new ApiError(err.statusCode,
+                        err.message, err.errors, err.stack))
+                } else {
+                    next(err)
+                }
+            })
     }
 }
 
