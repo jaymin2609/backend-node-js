@@ -1,4 +1,4 @@
-import { User } from "../models/user.model.js"
+import { User } from "../db/models/user.model.js"
 import { ApiError } from "../utils/ApiError.js"
 
 const checkUserExist = async (username, email) => {
