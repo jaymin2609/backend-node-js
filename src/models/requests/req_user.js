@@ -48,6 +48,18 @@ class ReqUser {
         return new BaseValidReturn(true, "")
     }
 
+    isValidForUpdateDetails() {
+        if (!this.fullName) {
+            return new BaseValidReturn(false, "All fields are required")
+        }
+
+        if (!this.fullName.trim().includes(" ")) {
+            return new BaseValidReturn(false, "Fullname is not valid")
+        }
+
+        return new BaseValidReturn(true, "")
+    }
+
 }
 
 export { ReqUser }

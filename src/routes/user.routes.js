@@ -1,7 +1,9 @@
 import { Router } from "express";
 import {
     registerUser, loginUser, logoutUser,
-    refreshAccessToken, changePassword
+    refreshAccessToken, changePassword,
+    getCurrentUser, updateDetails, updateUserAvatar,
+    updateUserCoverImage,
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js"
 import { API_VERSION } from "../constants.js"
@@ -13,6 +15,10 @@ const USER_LOGIN_ROUTE = "/login"
 const USER_LOGOUT_ROUTE = "/logout"
 const REFRESH_ACCESS_TOKEN_ROUTE = "/refreshAccessToken"
 const CHANGE_PASS_ROUTE = "/changePassword"
+const CURRENT_USER_ROUTE = "/getCurrentUser"
+const UPDATE_USER_DETAILS_ROUTE = "/updateUserDetails"
+const UPDATE_USER_AVATAR_ROUTE = "/updateUserAvatar"
+const UPDATE_USER_COVER_ROUTE = "/updateUserCover"
 
 const userRouter = Router()
 
@@ -38,6 +44,13 @@ userRouter.route(REFRESH_ACCESS_TOKEN_ROUTE).post(verifyJwt, refreshAccessToken)
 
 userRouter.route(CHANGE_PASS_ROUTE).post(verifyJwt, changePassword)
 
+userRouter.route(CURRENT_USER_ROUTE).get(verifyJwt, getCurrentUser)
+
+userRouter.route(UPDATE_USER_DETAILS_ROUTE).post(verifyJwt, updateDetails)
+
+userRouter.route(UPDATE_USER_AVATAR_ROUTE).post(verifyJwt, upload.single("avatar"), updateUserAvatar)
+
+userRouter.route(UPDATE_USER_COVER_ROUTE).post(verifyJwt, upload.single("coverImage"), updateUserCoverImage)
 
 
 export { userRouter, USER_ROUTE }

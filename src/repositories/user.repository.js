@@ -62,14 +62,14 @@ const findUserByIdWithAll = async (id) => {
     }
 }
 
-const updateUserDetails = async (id, refreshTokenIN) => {
+const updateUserDetails = async (id, updatedFields, excludeFields) => {
     try {
-        console.log("updateUserRefreshToken refreshTokenIN : ", refreshTokenIN);
+        console.log("updateUserDetails updatedFields : ", updatedFields);
         return await User.findByIdAndUpdate(id,
-            refreshTokenIN,
+            updatedFields,
             {
                 new: true
-            })
+            }).select(excludeFields)
     } catch (error) {
         throw new ApiError(500, "Internal Server Error!!", [error.stack])
     }

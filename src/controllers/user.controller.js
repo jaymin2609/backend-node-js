@@ -206,10 +206,104 @@ const changePassword = asyncHandler(async (req, res) => {
     )
 })
 
+const getCurrentUser = asyncHandler(async (req, res) => {
+    res.status(200).json(
+        new ApiResponse(200, {
+            userData: req.user,
+        }, "User details fetched Successfully")
+    )
+})
+
+const updateDetails = asyncHandler(async (req, res) => {
+    const reqBody = plainToInstance(ReqUser, req.body)
+    console.log("changePassword reqBody : ", reqBody);
+
+
+    const result = reqBody.isValidForUpdateDetails()
+
+    if (!result.isValid) {
+        throw new ApiError(400, result.message)
+    }
+
+    const updatedUser = await updateUserDetails(req.user._id, {
+        fullName: reqBody.fullName
+    }, "-password -watchHistory -__v -refreshToken")
+    console.log("updateDetails updatedUser : ", updatedUser);
+
+    if (!updatedUser) {
+        throw new ApiError(404, "User not found")
+    }
+
+    res.status(200).json(
+        new ApiResponse(200, {
+            updatedUser,
+        }, "User details has been updated Successfully")
+    )
+})
+
+const updateUserAvatar = asyncHandler(async (req, res) => {
+    const avatarLocalImage = req.file?.path
+    if (!avatarLocalImage) {
+        throw new ApiError(400, "Image not found")
+    }
+    const avatar = await uplodOnCloudinary(avatarLocalImage)
+    if (!avatar.url) {
+        throw new ApiError(500, "Error while uploading image")
+    }
+
+
+    const updatedUser = await updateUserDetails(req.user._id, {
+        avatar: avatar.url
+    }, "-password -watchHistory -__v -refreshToken")
+    console.log("updateUserAvatar updatedUser : ", updatedUser);
+
+    if (!updatedUser) {
+        throw new ApiError(404, "User not found")
+    }
+
+    res.status(200).json(
+        new ApiResponse(200, {
+            updatedUser,
+        }, "User details has been updated Successfully")
+    )
+})
+
+const updateUserCoverImage = asyncHandler(async (req, res) => {
+    const coverLocalImage = req.file?.path
+
+    if (!coverLocalImage) {
+        throw new ApiError(400, "Image not found")
+    }
+    const coverImage = await uplodOnCloudinary(coverLocalImage)
+    if (!coverImage.url) {
+        throw new ApiError(500, "Error while uploading image")
+    }
+
+
+    const updatedUser = await updateUserDetails(req.user._id, {
+        coverImage: coverImage.url
+    }, "-password -watchHistory -__v -refreshToken")
+    console.log("updateUserCoverImage updatedUser : ", updatedUser);
+
+    if (!updatedUser) {
+        throw new ApiError(404, "User not found")
+    }
+
+    res.status(200).json(
+        new ApiResponse(200, {
+            updatedUser,
+        }, "User details has been updated Successfully")
+    )
+})
+
 export {
     registerUser,
     loginUser,
     logoutUser,
     refreshAccessToken,
     changePassword,
+    getCurrentUser,
+    updateDetails,
+    updateUserAvatar,
+    updateUserCoverImage
 }
