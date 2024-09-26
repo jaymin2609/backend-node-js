@@ -42,4 +42,43 @@ const findUserById = async (id) => {
     }
 }
 
-export { checkUserExist, createUser, findUserById }
+const findUserByIdWithExclusion = async (id, excludeFields) => {
+    try {
+        return await User.findById(id)
+            .select(
+                excludeFields
+            )
+    } catch (error) {
+        throw new ApiError(500, "Internal Server Error!!", [error.stack])
+    }
+}
+
+const findUserByIdWithAll = async (id) => {
+    try {
+        return await User.findById(id)
+
+    } catch (error) {
+        throw new ApiError(500, "Internal Server Error!!", [error.stack])
+    }
+}
+
+const updateUserDetails = async (id, refreshTokenIN) => {
+    try {
+        console.log("updateUserRefreshToken refreshTokenIN : ", refreshTokenIN);
+        return await User.findByIdAndUpdate(id,
+            refreshTokenIN,
+            {
+                new: true
+            })
+    } catch (error) {
+        throw new ApiError(500, "Internal Server Error!!", [error.stack])
+    }
+}
+export {
+    checkUserExist,
+    createUser,
+    findUserById,
+    updateUserDetails,
+    findUserByIdWithAll,
+    findUserByIdWithExclusion,
+}

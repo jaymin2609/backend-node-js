@@ -2,11 +2,15 @@ import { BaseValidReturn } from "../base_valid_return.js"
 import { isEmailValid } from "../../utils/app_utils.js"
 
 class ReqUser {
-    constructor(username, email, fullName, password) {
+    constructor(username, email, fullName, password,
+        currentPassword, newPassword
+    ) {
         this.email = email;
         this.fullName = fullName;
         this.password = password;
         this.username = username;
+        this.currentPassword = currentPassword;
+        this.newPassword = newPassword
     }
 
     isValidForRegister() {
@@ -25,6 +29,23 @@ class ReqUser {
 
         return new BaseValidReturn(true, "")
 
+    }
+
+    isValidForLogin() {
+        if (!this.username && !this.email) {
+            return new BaseValidReturn(false, "Username or password required")
+        }
+
+        return new BaseValidReturn(true, "")
+
+    }
+
+    isValidForChangePassword() {
+        if (!this.currentPassword || !this.newPassword) {
+            return new BaseValidReturn(false, "All fields are required")
+        }
+
+        return new BaseValidReturn(true, "")
     }
 
 }
