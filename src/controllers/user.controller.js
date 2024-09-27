@@ -4,8 +4,10 @@ import { ApiResponse } from "../utils/ApiResponse.js"
 import { uplodOnCloudinary } from "../utils/cloudinary.js"
 import {
     checkUserExist, createUser, findUserById,
-    updateUserDetails, findUserByIdWithAll, findUserByIdWithExclusion
+    updateUserDetails, findUserByIdWithAll, findUserByIdWithExclusion,
+    getUserChannelProfileData, getWatchHistoryData
 } from "../repositories/user.repository.js"
+import { checkSubsExist, deleteSub, createSub, } from "../repositories/subscription.repository.js"
 import { plainToInstance } from "class-transformer"
 import { ReqUser } from "../models/requests/req_user.js"
 import { ERROR_MSG_SOMETHING_WENT_WRONG } from "../constants.js"
@@ -77,7 +79,7 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Something went wrong for user add")
     }
 
-    res.status(201).json(
+    return res.status(201).json(
         new ApiResponse(201, findUser, "User Created Successfully")
     )
 })
@@ -109,7 +111,7 @@ const loginUser = asyncHandler(async (req, res) => {
         "-password -refreshToken -watchHistory -__v")
 
 
-    res.status(200).json(
+    return res.status(200).json(
         new ApiResponse(200, {
             user: loggedInUser,
             accessToken,
@@ -127,7 +129,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     })
     console.log("logoutUser : updatedUser : ", updatedUser);
 
-    res.status(200).json(
+    return res.status(200).json(
         new ApiResponse(200, user.fullName, "Logged-out Successfully")
     )
 })
@@ -161,7 +163,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         }
         const { accessToken, refreshToken } = await generateAccessRefreshToken(user._id)
 
-        res.status(200).json(
+        return res.status(200).json(
             new ApiResponse(200, {
                 accessToken,
                 refreshToken
@@ -199,7 +201,7 @@ const changePassword = asyncHandler(async (req, res) => {
     currentUser.password = reqBody.newPassword
     await currentUser.save({ validateBeforeSave: false })
 
-    res.status(200).json(
+    return res.status(200).json(
         new ApiResponse(200, {
             newPassword: reqBody.newPassword,
         }, "Password has been updated Successfully")
@@ -207,7 +209,7 @@ const changePassword = asyncHandler(async (req, res) => {
 })
 
 const getCurrentUser = asyncHandler(async (req, res) => {
-    res.status(200).json(
+    return res.status(200).json(
         new ApiResponse(200, {
             userData: req.user,
         }, "User details fetched Successfully")
@@ -234,7 +236,7 @@ const updateDetails = asyncHandler(async (req, res) => {
         throw new ApiError(404, "User not found")
     }
 
-    res.status(200).json(
+    return res.status(200).json(
         new ApiResponse(200, {
             updatedUser,
         }, "User details has been updated Successfully")
@@ -261,7 +263,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
         throw new ApiError(404, "User not found")
     }
 
-    res.status(200).json(
+    return res.status(200).json(
         new ApiResponse(200, {
             updatedUser,
         }, "User details has been updated Successfully")
@@ -289,12 +291,102 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
         throw new ApiError(404, "User not found")
     }
 
-    res.status(200).json(
+    return res.status(200).json(
         new ApiResponse(200, {
             updatedUser,
         }, "User details has been updated Successfully")
     )
 })
+
+const getUserChannelProfile = asyncHandler(async (req, res) => {
+    const { username } = req.params
+
+    if (!username?.trim()) {
+        throw new ApiError(400, "Username is missing")
+    }
+
+    const channel = await getUserChannelProfileData(req.user, username)
+
+    return res.status(200).json(
+        new ApiResponse(200,
+            channel[0],
+            "Channel details fetched successfully")
+    )
+})
+
+const subUnsubChannel = asyncHandler(async (req, res) => {
+    try {
+        const { action, channelId } = req.body
+        const user = req.user
+        console.log("subUnsubChannel action : ", typeof action);
+        console.log("subUnsubChannel channelId : ", channelId);
+
+        if (action == NaN || !channelId?.trim()) {
+            console.log("subUnsubChannel !action || !channelId.trim() ");
+            throw new ApiError(400, "Invalid input(s):action")
+        }
+
+
+        if (!(action == 0 || action == 1)) {
+            throw new ApiError(400, "Invalid action")
+        }
+
+        const fetchedChannel = await findUserById(channelId)
+
+        if (!fetchedChannel) {
+            throw new ApiError(404, "Channel does not exist")
+        }
+
+        const subsAvl = await checkSubsExist(user._id, channelId)
+        console.log("subUnsubChannel subsAvl : ", subsAvl);
+
+
+        if (action == 0) {
+            if (!subsAvl) {
+                throw new ApiError(400, "User has not subscribed this channel")
+            }
+            const deleteResult = await deleteSub(user._id, channelId)
+            console.log("subUnsubChannel deleteResult : ", deleteResult);
+            return res.status(200).json(
+                new ApiResponse(200,
+                    { deleteResult },
+                    "Channel has been unsubscribed successfully")
+            )
+        }
+        if (action == 1) {
+            if (subsAvl) {
+                throw new ApiError(400, "User has already subscribed this channel")
+            }
+            const createSubResult = await createSub(user._id, channelId)
+            console.log("subUnsubChannel createSubResult : ", createSubResult);
+            return res.status(200).json(
+                new ApiResponse(200,
+                    { createSubResult },
+                    "Channel has been subscribed successfully")
+            )
+        }
+
+    } catch (error) {
+        throw new ApiError(400, error?.message || ERROR_MSG_SOMETHING_WENT_WRONG)
+    }
+})
+
+const getWatchHistory = asyncHandler(async (req, res) => {
+    // const { username } = req.params
+
+    // if (!username?.trim()) {
+    //     throw new ApiError(400, "Username is missing")
+    // }
+
+    const channel = await getWatchHistoryData(req.user, username)
+
+    return res.status(200).json(
+        new ApiResponse(200,
+            channel[0],
+            "Channel details fetched successfully")
+    )
+})
+
 
 export {
     registerUser,
@@ -305,5 +397,8 @@ export {
     getCurrentUser,
     updateDetails,
     updateUserAvatar,
-    updateUserCoverImage
+    updateUserCoverImage,
+    getUserChannelProfile,
+    subUnsubChannel,
+    getWatchHistory,
 }
