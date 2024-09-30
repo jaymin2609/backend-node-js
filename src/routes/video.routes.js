@@ -9,12 +9,18 @@ import {
 } from "../controllers/video.controller.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js"
 import { upload } from "../middlewares/multer.middleware.js"
+import { API_VERSION } from "../constants.js"
 
-const router = Router();
-router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
+const VIDEOS_ROUTE = `${API_VERSION}/videos`
+const VIDEO_CREATE_ALL_ROUTE = "/create-all"
+const VIDEO_OPERATION_ROUTE = "/v/:videoId"
+const TOGGLE_PUBLISH_ROUTE = "/toggle/publish/:videoId"
 
-router
-    .route("/")
+const videoRouter = Router();
+videoRouter.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
+
+videoRouter
+    .route(VIDEO_CREATE_ALL_ROUTE)
     .get(getAllVideos)
     .post(
         upload.fields([
@@ -31,12 +37,12 @@ router
         publishAVideo
     );
 
-router
-    .route("/:videoId")
+videoRouter
+    .route(VIDEO_OPERATION_ROUTE)
     .get(getVideoById)
     .delete(deleteVideo)
     .patch(upload.single("thumbnail"), updateVideo);
 
-router.route("/toggle/publish/:videoId").patch(togglePublishStatus);
+videoRouter.route(TOGGLE_PUBLISH_ROUTE).patch(togglePublishStatus);
 
-export default router
+export { videoRouter, VIDEOS_ROUTE }

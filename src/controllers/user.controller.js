@@ -1,7 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js"
 import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
-import { uplodOnCloudinary } from "../utils/cloudinary.js"
+import { uploadOnCloudinary } from "../utils/cloudinary.js"
 import {
     checkUserExist, createUser, findUserById,
     updateUserDetails, findUserByIdWithAll, findUserByIdWithExclusion,
@@ -60,9 +60,9 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Avatar file is required")
     }
 
-    const uploadAvatar = await uplodOnCloudinary(avatarLocalPath)
+    const uploadAvatar = await uploadOnCloudinary(avatarLocalPath)
 
-    const uploadcoverImage = await uplodOnCloudinary(coverImageLocalPath)
+    const uploadcoverImage = await uploadOnCloudinary(coverImageLocalPath)
 
     if (!uploadAvatar) {
         throw new ApiError(400, "Avatar file is required")
@@ -248,7 +248,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     if (!avatarLocalImage) {
         throw new ApiError(400, "Image not found")
     }
-    const avatar = await uplodOnCloudinary(avatarLocalImage)
+    const avatar = await uploadOnCloudinary(avatarLocalImage)
     if (!avatar.url) {
         throw new ApiError(500, "Error while uploading image")
     }
@@ -276,7 +276,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     if (!coverLocalImage) {
         throw new ApiError(400, "Image not found")
     }
-    const coverImage = await uplodOnCloudinary(coverLocalImage)
+    const coverImage = await uploadOnCloudinary(coverLocalImage)
     if (!coverImage.url) {
         throw new ApiError(500, "Error while uploading image")
     }
