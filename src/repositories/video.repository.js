@@ -1,6 +1,5 @@
 import { Video } from "../db/models/video.model.js"
 import { ApiError } from "../utils/ApiError.js"
-import mongoose, { Schema } from "mongoose"
 
 const addVideo = async (videoFile, thumbnail, title, description,
     duration, owner) => {

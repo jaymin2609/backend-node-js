@@ -6,14 +6,22 @@ import {
     updateTweet,
 } from "../controllers/tweet.controller.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js"
+import { API_VERSION } from "../constants.js"
 
-const router = Router();
-router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
+const TWEETS_ROUTE = `${API_VERSION}/tweets`
+const CREATE_TWEET_ROUTE = "/create"
+const GET_USER_TWEET_ROUTE = "/user/:userId"
+const TWEET_CRUD_ROUTE = "/:tweetId"
 
-router.route("/").post(createTweet);
-router.route("/user/:userId").get(getUserTweets);
-router.route("/:tweetId")
+const tweetRouter = Router();
+tweetRouter.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
+
+tweetRouter.route(CREATE_TWEET_ROUTE).post(createTweet);
+
+tweetRouter.route(GET_USER_TWEET_ROUTE).get(getUserTweets);
+
+tweetRouter.route(TWEET_CRUD_ROUTE)
     .patch(updateTweet)
     .delete(deleteTweet);
 
-export default router
+export { tweetRouter, TWEETS_ROUTE }

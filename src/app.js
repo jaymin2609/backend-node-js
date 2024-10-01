@@ -23,6 +23,7 @@ app.use(cookieParser())
 import { userRouter, USER_ROUTE } from "./routes/user.routes.js"
 import { subsRouter, SUBS_ROUTE } from "./routes/subscription.routes.js"
 import { videoRouter, VIDEOS_ROUTE } from "./routes/video.routes.js"
+import { tweetRouter, TWEETS_ROUTE } from "./routes/tweet.routes.js"
 
 // Routes declaration
 app.use(USER_ROUTE, userRouter)
@@ -30,5 +31,7 @@ app.use(USER_ROUTE, userRouter)
 app.use(SUBS_ROUTE, subsRouter)
 
 app.use(VIDEOS_ROUTE, videoRouter)
+
+app.use(TWEETS_ROUTE, tweetRouter)
 
 export { app }
