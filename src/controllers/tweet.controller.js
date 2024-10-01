@@ -1,4 +1,3 @@
-import mongoose, { isValidObjectId } from "mongoose"
 import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
@@ -46,7 +45,6 @@ const getUserTweets = asyncHandler(async (req, res) => {
 
 const updateTweet = asyncHandler(async (req, res) => {
     try {
-        //TODO: update tweet
         const { tweetId } = req.params
         const { content } = req.body
         if (!content) {
