@@ -58,6 +58,22 @@ const findTweetByIdAndOwner = async (id, owner) => {
     }
 }
 
+const findTweetById = async (id) => {
+    try {
+        return await Tweet.findOne(
+            {
+                _id: id,
+            }
+        )
+            .select(
+                "-createdAt -updatedAt"
+            )
+    } catch (error) {
+        throw new ApiError(500, "Internal Server Error!!", [error.stack])
+    }
+}
+
+
 const deleteTweetById = async (id) => {
     try {
         const deleted = await Tweet.deleteOne({
@@ -77,4 +93,5 @@ export {
     updateTweetDetails,
     findTweetByIdAndOwner,
     deleteTweetById,
+    findTweetById,
 }

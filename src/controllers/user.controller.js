@@ -13,6 +13,7 @@ import { ReqUser } from "../models/requests/req_user.js"
 import { ERROR_MSG_SOMETHING_WENT_WRONG } from "../constants.js"
 import { User } from "../db/models/user.model.js"
 import jwt from "jsonwebtoken"
+import { ResLogin } from "../models/responses/res_login.js"
 
 const generateAccessRefreshToken = async (userId) => {
     try {
@@ -113,7 +114,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
     return res.status(200).json(
         new ApiResponse(200, {
-            user: loggedInUser,
+            user: new ResLogin(loggedInUser),
             accessToken,
             refreshToken,
         }, "Logged-in Successfully")

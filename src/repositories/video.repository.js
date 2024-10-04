@@ -26,7 +26,7 @@ const findVideoById = async (id) => {
                 "-createdAt -updatedAt"
             )
     } catch (error) {
-        throw new ApiError(500, "Internal Server Error!!", [error.stack])
+        throw new ApiError(500, error?.message || "Internal Server Error!!", [error.stack])
     }
 }
 
