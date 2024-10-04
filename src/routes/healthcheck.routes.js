@@ -1,8 +1,11 @@
 import { Router } from 'express';
 import { healthcheck } from "../controllers/healthcheck.controller.js"
+import { API_VERSION } from "../constants.js"
 
-const router = Router();
+const HEALTH_CHECK_ROUTE = `${API_VERSION}/healthCheck`
 
-router.route('/').get(healthcheck);
+const healthCheckRouter = Router();
 
-export default router
+healthCheckRouter.route('/').get(healthcheck);
+
+export { healthCheckRouter, HEALTH_CHECK_ROUTE }

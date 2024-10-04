@@ -28,6 +28,7 @@ import { commentRouter, COMMENT_ROUTE } from "./routes/comment.routes.js"
 import { likesRouter, LIKES_ROUTE } from "./routes/like.routes.js"
 import { dashboardRouter, DASHBOARD_ROUTE } from "./routes/dashboard.routes.js"
 import { playlistRouter, PLAYLISTS_ROUTE } from "./routes/playlist.routes.js"
+import { healthCheckRouter, HEALTH_CHECK_ROUTE } from "./routes/healthcheck.routes.js"
 
 // Routes declaration
 app.use(USER_ROUTE, userRouter)
@@ -45,5 +46,7 @@ app.use(LIKES_ROUTE, likesRouter)
 app.use(DASHBOARD_ROUTE, dashboardRouter)
 
 app.use(PLAYLISTS_ROUTE, playlistRouter)
+
+app.use(HEALTH_CHECK_ROUTE, healthCheckRouter)
 
 export { app }
