@@ -60,11 +60,6 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
             throw new ApiError(400, "Invalid input(s)")
         }
 
-        // const video = await findVideoById(videoId)
-        // if (!video) {
-        //     throw new ApiError(404, "Video not found")
-        // }
-
         const commnetLikeAvl = await checkCommentLike(user._id, commentId)
         console.log("toggleCommentLike commnetLikeAvl : ", commnetLikeAvl);
 

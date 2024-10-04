@@ -1,5 +1,6 @@
 import { Video } from "../db/models/video.model.js"
 import { ApiError } from "../utils/ApiError.js"
+import mongoose, { Schema } from "mongoose"
 
 const addVideo = async (videoFile, thumbnail, title, description,
     duration, owner) => {
@@ -85,6 +86,55 @@ const findAllVideo = async (page, limit, filter, sortObject) => {
     }
 }
 
+const findAllVideoByOwner = async (owner) => {
+    try {
+        console.log("findAllVideoByOwner owner : ", owner);
+
+        return await Video.find(
+            { owner }
+        )
+    } catch (error) {
+        throw new ApiError(500, "Internal Server Error!!", [error.stack])
+    }
+}
+
+const totalVideoCountByOwner = async (owner) => {
+    try {
+        return await Video.countDocuments(
+            { owner }
+        )
+    } catch (error) {
+        throw new ApiError(500, "Internal Server Error!!", [error.stack])
+    }
+}
+
+const totalVideoViewsByOwner = async (owner) => {
+    try {
+        const totalViewsResult = await Video.aggregate([
+            {
+                $match: {
+                    owner: owner
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalViews: { $sum: "$views" }
+                }
+            }
+        ])
+
+        let viewCount = 0;
+        if (totalViewsResult.length > 0 && totalViewsResult[0].totalViews !== undefined) {
+            viewCount = totalViewsResult[0].totalViews;
+        }
+        return viewCount
+
+    } catch (error) {
+        throw new ApiError(500, "Internal Server Error!!", [error.stack])
+    }
+}
+
 
 export {
     addVideo,
@@ -93,4 +143,8 @@ export {
     updateVideoDetails,
     findVideoByIdAndOwner,
     findAllVideo,
+    totalVideoCountByOwner,
+    totalVideoViewsByOwner,
+    findAllVideoByOwner
+
 }

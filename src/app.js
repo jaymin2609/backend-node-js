@@ -26,6 +26,7 @@ import { videoRouter, VIDEOS_ROUTE } from "./routes/video.routes.js"
 import { tweetRouter, TWEETS_ROUTE } from "./routes/tweet.routes.js"
 import { commentRouter, COMMENT_ROUTE } from "./routes/comment.routes.js"
 import { likesRouter, LIKES_ROUTE } from "./routes/like.routes.js"
+import { dashboardRouter, DASHBOARD_ROUTE } from "./routes/dashboard.routes.js"
 
 // Routes declaration
 app.use(USER_ROUTE, userRouter)
@@ -39,5 +40,7 @@ app.use(TWEETS_ROUTE, tweetRouter)
 app.use(COMMENT_ROUTE, commentRouter)
 
 app.use(LIKES_ROUTE, likesRouter)
+
+app.use(DASHBOARD_ROUTE, dashboardRouter)
 
 export { app }

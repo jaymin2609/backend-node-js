@@ -4,12 +4,18 @@ import {
     getChannelVideos,
 } from "../controllers/dashboard.controller.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js"
+import { API_VERSION } from "../constants.js"
 
-const router = Router();
+const DASHBOARD_ROUTE = `${API_VERSION}/dashboard`
+const STATS_ROUTE = "/stats"
+const VIDEOS_ROUTE = "/videos"
 
-router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
+const dashboardRouter = Router();
 
-router.route("/stats").get(getChannelStats);
-router.route("/videos").get(getChannelVideos);
+dashboardRouter.use(verifyJWT);
 
-export default router
+dashboardRouter.route(STATS_ROUTE).get(getChannelStats);
+
+dashboardRouter.route(VIDEOS_ROUTE).get(getChannelVideos);
+
+export { dashboardRouter, DASHBOARD_ROUTE }
