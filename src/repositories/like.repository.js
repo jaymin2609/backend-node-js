@@ -137,7 +137,9 @@ const getLikedVideo = async (user) => {
         return videos
 
     } catch (error) {
-        throw new ApiError(500, "Internal Server Error!!", [error.stack])
+        console.log("getLikedVideo ERRO : ", error);
+
+        throw new ApiError(500, error?.message || "Internal Server Error!!", [error.stack])
     }
 }
 

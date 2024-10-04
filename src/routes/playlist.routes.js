@@ -9,22 +9,33 @@ import {
     updatePlaylist,
 } from "../controllers/playlist.controller.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js"
+import { API_VERSION } from "../constants.js"
 
-const router = Router();
+const PLAYLISTS_ROUTE = `${API_VERSION}/playlists`
+const CREATE_PLAYLIST_ROUTE = "/create"
+const PLAYLIST_CRUD_ROUTE = "/:playlistId"
+const ADD_VIDEO_PLAYLIST_ROUTE = "/add/:videoId/:playlistId"
+const REMOVE_VIDEO_PLAYLIST_ROUTE = "/remove/:videoId/:playlistId"
+const GET_USER_PLAYLIST_ROUTE = "/user/:userId"
 
-router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
+const playlistRouter = Router();
 
-router.route("/").post(createPlaylist)
+playlistRouter.use(verifyJWT);
 
-router
-    .route("/:playlistId")
+
+playlistRouter.route(CREATE_PLAYLIST_ROUTE)
+    .post(createPlaylist)
+
+playlistRouter
+    .route(PLAYLIST_CRUD_ROUTE)
     .get(getPlaylistById)
     .patch(updatePlaylist)
     .delete(deletePlaylist);
 
-router.route("/add/:videoId/:playlistId").patch(addVideoToPlaylist);
-router.route("/remove/:videoId/:playlistId").patch(removeVideoFromPlaylist);
+playlistRouter.route(ADD_VIDEO_PLAYLIST_ROUTE).patch(addVideoToPlaylist);
 
-router.route("/user/:userId").get(getUserPlaylists);
+playlistRouter.route(REMOVE_VIDEO_PLAYLIST_ROUTE).patch(removeVideoFromPlaylist);
 
-export default router
+playlistRouter.route(GET_USER_PLAYLIST_ROUTE).get(getUserPlaylists);
+
+export { playlistRouter, PLAYLISTS_ROUTE }

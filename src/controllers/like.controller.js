@@ -139,12 +139,18 @@ const getLikedVideos = asyncHandler(async (req, res) => {
     try {
         const user = req.user
         const likedVideos = await getLikedVideo(user)
-        return res.status(200).json(
-            new ApiResponse(200,
-                { likedVideos },
-                "Fetched liked video(s) successfully")
-        )
+        if (likedVideos?.length > 0) {
+            return res.status(200).json(
+                new ApiResponse(200,
+                    { likedVideos },
+                    "Fetched liked video(s) successfully")
+            )
+        } else {
+            throw new ApiError(404, "No liked video(s) found")
+        }
+
     } catch (error) {
+
         throw new ApiError(400, error?.message || ERROR_MSG_SOMETHING_WENT_WRONG)
     }
 })
